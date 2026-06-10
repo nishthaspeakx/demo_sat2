@@ -5,27 +5,35 @@ import ChatBubble from "./ChatBubble.jsx";
 import MCQCard from "./MCQCard.jsx";
 import AnagramCard from "./AnagramCard.jsx";
 import ReadAlongCard from "./ReadAlongCard.jsx";
-import { speak } from "./speech.js";
+import BottomMicInput from "./BottomMicInput.jsx";
+import { speak, stopSpeaking, recognizeOnce, recognitionSupported, matches } from "./speech.js";
 
 /**
  * GuideConversationScreen — fixed top half (guide-bg + guide character + white
  * fade + progress, all 3 circles grey to start) and a lower half that runs its
  * own guide flow. Self-contained; calls onComplete() to advance to the result.
  *
- * stages: guide_intro → guide_anagram → guide_mcq → guide_read_along
- *         → guide_complete
+ * stages: guide_intro → guide_hello → guide_anagram → guide_mcq
+ *         → guide_read_along → guide_complete
  */
 export default function GuideConversationScreen({ onComplete }) {
   const [stage, setStage] = useState("guide_intro");
   const [completed, setCompleted] = useState(0); // guideTasksCompleted
   const [messages, setMessages] = useState([]);
+  const [listening, setListening] = useState(false);
 
   const idRef = useRef(0);
   const nextId = () => ++idRef.current;
-  const add = (side, text) => {
+  const add = (side, text, opts = {}) => {
     setMessages((m) => [...m, { id: nextId(), side, text }]);
-    if (side === "guide") speak(text, { gender: "male" });
+    if (side === "guide") speak(text, { gender: "male", onend: opts.onend });
+    else if (opts.onend) opts.onend();
   };
+
+  const stageRef = useRef(stage);
+  useEffect(() => {
+    stageRef.current = stage;
+  }, [stage]);
 
   const scrollRef = useRef(null);
   useEffect(() => {
@@ -33,17 +41,44 @@ export default function GuideConversationScreen({ onComplete }) {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, stage]);
 
-  /* intro: Hello → Hello → How may I help you? → anagram */
+  /* intro: guide greets, then the USER must greet back (real mic / type) */
   useEffect(() => {
-    const ts = [];
     setMessages([{ id: nextId(), side: "guide", text: "Hello" }]);
-    speak("Hello", { gender: "male" });
-    ts.push(setTimeout(() => add("user", "Hello"), 1200));
-    ts.push(setTimeout(() => add("guide", "How may I help you?"), 2200));
-    ts.push(setTimeout(() => setStage("guide_anagram"), 3400));
-    return () => ts.forEach(clearTimeout);
+    speak("Hello", { gender: "male", onend: () => setStage("guide_hello") });
+    const safety = setTimeout(
+      () => setStage((s) => (s === "guide_intro" ? "guide_hello" : s)),
+      4000
+    );
+    return () => clearTimeout(safety);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /* user greets the guide */
+  function handleHello(text) {
+    add("user", text);
+    if (matches(text, "hello") || matches(text, "hi")) {
+      add("guide", "How may I help you?", {
+        onend: () => setStage("guide_anagram"),
+      });
+    } else {
+      add("guide", "Greet me first — just say “Hello”.");
+    }
+  }
+
+  function handleMic() {
+    if (listening) return;
+    if (!recognitionSupported()) {
+      add("guide", "Mic isn’t available here — type your answer below.");
+      return;
+    }
+    stopSpeaking();
+    setListening(true);
+    recognizeOnce({
+      onResult: (t) => handleHello(t),
+      onError: () => setListening(false),
+      onEnd: () => setListening(false),
+    });
+  }
 
   function handleAnagram(text) {
     add("user", text);
@@ -123,6 +158,9 @@ export default function GuideConversationScreen({ onComplete }) {
         </div>
 
         <AnimatePresence mode="wait">
+          {stage === "guide_hello" && (
+            <BottomMicInput key="g-hello" listening={listening} onMic={handleMic} onSubmit={handleHello} />
+          )}
           {stage === "guide_read_along" && (
             <ReadAlongCard key="g-read" sentence="Great! I will hire you." voice="male" onDone={handleReadAlong} />
           )}

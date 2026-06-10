@@ -46,9 +46,10 @@ export default function App() {
   const idRef = useRef(0);
   const nextId = () => ++idRef.current;
   // adding a Sia line also speaks it aloud (TTS)
-  const addMsg = (side, text) => {
+  const addMsg = (side, text, opts = {}) => {
     setMessages((m) => [...m, { id: nextId(), side, text }]);
-    if (side === "sia") speak(text, { gender: "female" });
+    if (side === "sia") speak(text, { gender: "female", onend: opts.onend });
+    else if (opts.onend) opts.onend();
   };
   // current stage in a ref so async recognition callbacks read the latest value
   const stageRef = useRef(stage);
@@ -60,14 +61,19 @@ export default function App() {
   useEffect(() => {
     if (screen !== "chat") return;
     if (stage !== "intro") return; // skip when jumped via DEV_STAGE
+    // chain bubbles to the voice so text + audio stay in sync
     setMessages([{ id: nextId(), side: "sia", text: INTRO_1 }]);
-    speak(INTRO_1, { gender: "female" });
-    const t1 = setTimeout(() => addMsg("sia", INTRO_2), 2600);
-    const t2 = setTimeout(() => setStage("say_hello"), 3600);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
+    speak(INTRO_1, {
+      gender: "female",
+      onend: () =>
+        addMsg("sia", INTRO_2, { onend: () => setStage("say_hello") }),
+    });
+    // safety: never get stuck in intro if speech stalls
+    const safety = setTimeout(
+      () => setStage((s) => (s === "intro" ? "say_hello" : s)),
+      11000
+    );
+    return () => clearTimeout(safety);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
 

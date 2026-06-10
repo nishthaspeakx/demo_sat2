@@ -24,24 +24,45 @@ if (typeof window !== "undefined" && window.speechSynthesis) {
   window.speechSynthesis.onvoiceschanged = refreshVoices;
 }
 
+const FEMALE_NAMES = /samantha|victoria|allison|ava|susan|karen|moira|tessa|fiona|veena|kate|serena|zoe|nicky|joana|female|zira|aria|jenny|libby|sonia|neerja|heera|isha/i;
+const MALE_NAMES = /daniel|alex|fred|tom|aaron|rishi|oliver|lee|gordon|male|david|mark|guy|ravi|prabhat|hemant|madhur/i;
+
 function pickVoice(gender) {
   const list = (window.speechSynthesis?.getVoices?.() || voices) || [];
   if (!list.length) return null;
-  const indian = list.find((v) => /en[-_]IN/i.test(v.lang));
-  if (indian) return indian;
-  const femaleRe = /female|samantha|zira|aria|jenny|google us english|google uk english female/i;
-  const maleRe = /male|daniel|david|alex|google uk english male/i;
-  const byGender = list.find((v) =>
-    /^en/i.test(v.lang) && (gender === "male" ? maleRe : femaleRe).test(v.name)
+  const en = list.filter((v) => /^en/i.test(v.lang));
+  const pool = en.length ? en : list;
+  const enIN = pool.filter((v) => /en[-_]IN/i.test(v.lang));
+  const want = gender === "male" ? MALE_NAMES : FEMALE_NAMES;
+  const avoid = gender === "male" ? FEMALE_NAMES : MALE_NAMES;
+  return (
+    enIN.find((v) => want.test(v.name)) || // gender + Indian English
+    pool.find((v) => want.test(v.name)) || // gender, any English
+    enIN.find((v) => !avoid.test(v.name)) || // Indian, not wrong gender
+    pool.find((v) => !avoid.test(v.name)) ||
+    pool[0]
   );
-  return byGender || list.find((v) => /^en/i.test(v.lang)) || list[0];
 }
 
-/** Speak `text`. gender: "female" (Sia) | "male" (guide). */
-export function speak(text, { gender = "female", rate = 1 } = {}) {
+function estMs(text) {
+  const words = String(text).trim().split(/\s+/).length;
+  return Math.min(7000, Math.max(800, words * 340));
+}
+
+/**
+ * Speak `text`. gender: "female" (Sia) | "male" (guide).
+ * Cancels any current speech first so the audio matches the newest bubble.
+ * `onend` fires when speech finishes (or after a fallback if TTS is missing) —
+ * use it to keep the conversation in sync with the voice.
+ */
+export function speak(text, { gender = "female", rate = 1, onend } = {}) {
+  const synth = typeof window !== "undefined" ? window.speechSynthesis : null;
+  if (!synth || !text) {
+    if (onend) setTimeout(onend, estMs(text));
+    return;
+  }
   try {
-    const synth = window.speechSynthesis;
-    if (!synth || !text) return;
+    synth.cancel();
     const u = new SpeechSynthesisUtterance(
       String(text).replace(/[“”]/g, '"').replace(/[‘’]/g, "'")
     );
@@ -49,10 +70,20 @@ export function speak(text, { gender = "female", rate = 1 } = {}) {
     if (v) u.voice = v;
     u.lang = (v && v.lang) || "en-IN";
     u.rate = rate;
-    u.pitch = gender === "male" ? 0.9 : 1.08;
-    synth.speak(u); // utterances queue naturally
+    u.pitch = gender === "male" ? 0.85 : 1.1;
+
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      onend && onend();
+    };
+    u.onend = finish;
+    u.onerror = finish;
+    setTimeout(finish, estMs(text) + 1500); // safety if onend never fires
+    synth.speak(u);
   } catch {
-    /* no-op */
+    if (onend) setTimeout(onend, estMs(text));
   }
 }
 
