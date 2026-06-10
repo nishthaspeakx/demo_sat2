@@ -1,0 +1,131 @@
+<svg width="360" height="460" viewBox="0 0 360 460" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    INDIAN TOURIST GUIDE  |  rig-ready, same body-part grouping as base.
+    Added: collared guide shirt, lanyard + GUIDE id badge, neater combed hair.
+    Expression variants (eyes-closed / mouth-mid / mouth-wide) kept hidden.
+    Palette: skin #C8895B, skin-shadow #AE744A, hair #1C1B1F,
+    shirt #3E8E7E, shirt-shadow #2F6E61, lanyard #E0712F, mouth #7A3B2E
+  -->
+  <g id="character">
+
+    <g id="hair-back">
+      <path d="M108 150 C100 95 132 60 180 60 C228 60 260 95 252 150 C250 168 246 182 240 196 C244 150 236 120 180 120 C124 120 116 150 120 196 C114 182 110 168 108 150 Z" fill="#1C1B1F"/>
+    </g>
+
+    <g id="neck">
+      <path d="M158 196 L202 196 L202 226 C202 240 158 240 158 226 Z" fill="#AE744A"/>
+      <path d="M158 196 L202 196 L202 210 C188 220 172 220 158 210 Z" fill="#C8895B"/>
+    </g>
+
+    <g id="head">
+      <g id="ears">
+        <ellipse cx="122" cy="150" rx="13" ry="19" fill="#C8895B"/>
+        <ellipse cx="238" cy="150" rx="13" ry="19" fill="#C8895B"/>
+        <path d="M120 144 c6 0 8 6 6 12" stroke="#AE744A" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M240 144 c-6 0 -8 6 -6 12" stroke="#AE744A" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <g id="face">
+        <path d="M120 130 C120 92 146 74 180 74 C214 74 240 92 240 130 C240 168 224 200 180 212 C136 200 120 168 120 130 Z" fill="#C8895B"/>
+        <path d="M134 168 C146 196 162 206 180 212 C150 206 138 188 134 168 Z" fill="#BC7E50" opacity="0.5"/>
+      </g>
+
+      <g id="eyebrows">
+        <path d="M140 132 C150 126 164 126 172 132" stroke="#1C1B1F" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M188 132 C196 126 210 126 220 132" stroke="#1C1B1F" stroke-width="5" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <g id="eyes">
+        <g id="eyes-open">
+          <g id="eye-left">
+            <ellipse cx="156" cy="148" rx="10" ry="11" fill="#FFFFFF"/>
+            <circle cx="158" cy="149" r="5.5" fill="#3A2A20"/>
+            <circle cx="160" cy="147" r="1.8" fill="#FFFFFF"/>
+          </g>
+          <g id="eye-right">
+            <ellipse cx="204" cy="148" rx="10" ry="11" fill="#FFFFFF"/>
+            <circle cx="206" cy="149" r="5.5" fill="#3A2A20"/>
+            <circle cx="208" cy="147" r="1.8" fill="#FFFFFF"/>
+          </g>
+        </g>
+        <g id="eyes-closed" opacity="0">
+          <path d="M146 148 Q156 157 166 148" stroke="#3A2A20" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M194 148 Q204 157 214 148" stroke="#3A2A20" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        </g>
+      </g>
+
+      <g id="nose">
+        <path d="M178 154 C174 168 170 174 176 180 C180 183 184 182 186 179" stroke="#AE744A" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+
+      <g id="mouth">
+        <g id="mouth-rest">
+          <path d="M162 192 C172 202 188 202 198 192" stroke="#7A3B2E" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </g>
+        <g id="mouth-mid" opacity="0">
+          <ellipse cx="180" cy="194" rx="11" ry="8" fill="#7A3B2E"/>
+          <ellipse cx="180" cy="195" rx="7" ry="4.5" fill="#5A2A22"/>
+        </g>
+        <g id="mouth-wide" opacity="0">
+          <ellipse cx="180" cy="196" rx="14" ry="12" fill="#7A3B2E"/>
+          <ellipse cx="180" cy="197" rx="10" ry="8.5" fill="#5A2A22"/>
+          <path d="M170 189 Q180 192 190 189" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </g>
+      </g>
+
+      <g id="hair-front">
+        <!-- sideburns -->
+        <path d="M131 134 L137 134 L136 160 L130 157 Z" fill="#1C1B1F"/>
+        <path d="M229 134 L223 134 L224 160 L230 157 Z" fill="#1C1B1F"/>
+        <!-- main combed top with side sweep -->
+        <path d="M114 140 C106 96 138 62 180 62 C224 62 254 96 246 140 C240 120 232 108 216 104 C222 116 220 126 215 132 C208 112 194 102 180 102 C150 102 132 114 128 144 C123 140 117 140 114 140 Z" fill="#1C1B1F"/>
+        <!-- parting highlight -->
+        <path d="M180 62 C202 62 220 76 226 98 C214 86 200 84 188 88 C180 90 174 98 172 106 C170 86 170 70 180 62 Z" fill="#2A282E"/>
+        <!-- comb strands -->
+        <path d="M150 80 C160 96 168 106 174 116" stroke="#2A282E" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M168 76 C178 92 188 100 200 110" stroke="#2A282E" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </g>
+    </g>
+
+    <g id="arm-left">
+      <path d="M70 308 C62 350 60 390 66 420 C76 428 92 428 100 420 C98 386 100 344 102 310 Z" fill="#C8895B"/>
+      <ellipse id="hand-left" cx="82" cy="428" rx="18" ry="20" fill="#C8895B"/>
+    </g>
+    <g id="arm-right">
+      <path d="M290 308 C298 350 300 390 294 420 C284 428 268 428 260 420 C262 386 260 344 258 310 Z" fill="#C8895B"/>
+      <ellipse id="hand-right" cx="278" cy="428" rx="18" ry="20" fill="#C8895B"/>
+    </g>
+
+    <g id="shirt">
+      <path d="M145 234 C120 240 96 252 80 274 C70 290 66 308 66 326 L104 332 C104 310 110 296 120 286 L120 438 L240 438 L240 286 C250 296 256 310 256 332 L294 326 C294 308 290 290 280 274 C264 252 240 240 215 234 C210 254 192 264 180 264 C168 264 150 254 145 234 Z" fill="#3E8E7E"/>
+      <path d="M120 286 L120 438 L138 438 L138 290 C132 287 126 286 120 286 Z" fill="#2F6E61" opacity="0.55"/>
+      <path d="M240 286 C234 286 228 287 222 290 L222 438 L240 438 Z" fill="#2F6E61" opacity="0.55"/>
+      <g id="collar">
+        <path d="M160 248 C150 258 146 274 150 290 L182 268 Z" fill="#357A6C"/>
+        <path d="M200 248 C210 258 214 274 210 290 L178 268 Z" fill="#357A6C"/>
+        <circle cx="180" cy="284" r="2.5" fill="#285C50"/>
+        <circle cx="180" cy="298" r="2.5" fill="#285C50"/>
+      </g>
+    </g>
+
+    <g id="lanyard">
+      <path d="M150 256 L160 256 L173 304 L163 304 Z" fill="#E0712F"/>
+      <path d="M210 256 L200 256 L187 304 L197 304 Z" fill="#E0712F"/>
+      <rect x="171" y="298" width="18" height="9" rx="2" fill="#4A4A4A"/>
+    </g>
+
+    <g id="id-badge">
+      <rect x="145" y="305" width="70" height="64" rx="6" fill="#F5F5F0" stroke="#CFCDC4" stroke-width="1"/>
+      <path d="M151 305 h58 a6 6 0 0 1 6 6 v6 h-70 v-6 a6 6 0 0 1 6 -6 Z" fill="#3E8E7E"/>
+      <text x="180" y="316" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">GUIDE</text>
+      <rect x="152" y="326" width="22" height="27" rx="3" fill="#C8895B"/>
+      <circle cx="163" cy="335" r="6" fill="#AE744A"/>
+      <path d="M153 353 q10 -11 20 0 Z" fill="#AE744A"/>
+      <rect x="180" y="330" width="28" height="4" rx="2" fill="#B8B5AE"/>
+      <rect x="180" y="339" width="24" height="4" rx="2" fill="#B8B5AE"/>
+      <rect x="180" y="348" width="20" height="4" rx="2" fill="#B8B5AE"/>
+      <rect x="152" y="358" width="56" height="5" rx="2" fill="#D8D6CE"/>
+    </g>
+
+  </g>
+</svg>

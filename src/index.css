@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+body {
+  background: #0a0a0c;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle, premium pulse for the mic button (halo ring) */
+@keyframes micPulse {
+  0%   { transform: scale(1);   opacity: 0.5; }
+  70%  { transform: scale(1.9); opacity: 0;   }
+  100% { transform: scale(1.9); opacity: 0;   }
+}
+.mic-pulse-ring {
+  animation: micPulse 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mic-pulse-ring { animation: none; }
+}
+
+/* Animated waveform bars (variant C) */
+@keyframes waveBar {
+  0%, 100% { transform: scaleY(0.35); }
+  50%      { transform: scaleY(1);    }
+}
+.wave-bar {
+  transform-origin: center;
+  animation: waveBar 1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wave-bar { animation: none; transform: scaleY(0.6); }
+}
+
+/* Guide character gentle fade + rise (keeps horizontal centering) */
+@keyframes guideEnter {
+  0%   { opacity: 0; transform: translate(-50%, 24px); }
+  100% { opacity: 1; transform: translate(-50%, 0); }
+}
+.guide-enter {
+  animation: guideEnter 0.7s ease-out 0.2s both;
+}
