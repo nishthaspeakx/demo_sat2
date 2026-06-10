@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
+import { speak, stopSpeaking, recognizeOnce, recognitionSupported, matches } from "./speech.js";
 import MapScreen from "./MapScreen.jsx";
 import TajChatScreen from "./TajChatScreen.jsx";
 import MeetGuideTransition from "./MeetGuideTransition.jsx";
@@ -18,6 +19,8 @@ const SIA_AFTER_ANAGRAM =
   "Awesome! now aapko guide ko kehna hai “Ok, I will hire you.” Repeat after me.";
 const SIA_FINAL =
   "Great ab aap ready hai guide hire karne ke liye. Let’s meet the guide and talk to him.";
+const SIA_TRY_HELLO = "Almost! Bas “Hello” boliye.";
+const SIA_WRONG_COST = "Aapko bolna hai “What will be the cost?” — let’s arrange it.";
 
 /**
  * App — prototype root + state machine.
@@ -42,16 +45,25 @@ export default function App() {
 
   const idRef = useRef(0);
   const nextId = () => ++idRef.current;
-  const addMsg = (side, text) =>
+  // adding a Sia line also speaks it aloud (TTS)
+  const addMsg = (side, text) => {
     setMessages((m) => [...m, { id: nextId(), side, text }]);
+    if (side === "sia") speak(text, { gender: "female" });
+  };
+  // current stage in a ref so async recognition callbacks read the latest value
+  const stageRef = useRef(stage);
+  useEffect(() => {
+    stageRef.current = stage;
+  }, [stage]);
 
   /* intro sequence when entering the chat screen */
   useEffect(() => {
     if (screen !== "chat") return;
     if (stage !== "intro") return; // skip when jumped via DEV_STAGE
     setMessages([{ id: nextId(), side: "sia", text: INTRO_1 }]);
-    const t1 = setTimeout(() => addMsg("sia", INTRO_2), 900);
-    const t2 = setTimeout(() => setStage("say_hello"), 1900);
+    speak(INTRO_1, { gender: "female" });
+    const t1 = setTimeout(() => addMsg("sia", INTRO_2), 2600);
+    const t2 = setTimeout(() => setStage("say_hello"), 3600);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -59,29 +71,52 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
 
-  /* mic press → simulate listening then the expected user speech */
+  function siaThen(text, nextStage, delay = 450) {
+    setTimeout(() => {
+      addMsg("sia", text);
+      setStage(nextStage);
+    }, delay);
+  }
+
+  /* evaluate a real spoken/typed answer for the current speaking stage */
+  function handleAnswer(text) {
+    const s = stageRef.current;
+    addMsg("user", text);
+    if (s === "say_hello") {
+      if (matches(text, "hello")) siaThen(SIA_AFTER_HELLO, "guide_sentence");
+      else siaThen(SIA_TRY_HELLO, "say_hello");
+    } else if (s === "guide_sentence") {
+      if (matches(text, "I am looking for guide")) {
+        setCompleted((c) => Math.max(c, 1));
+        siaThen(SIA_AFTER_MCQ, "cost_sentence");
+      } else {
+        siaThen(SIA_WRONG_GUIDE, "mcq"); // wrong → MCQ helps
+      }
+    } else if (s === "cost_sentence") {
+      if (matches(text, "What will be the cost")) {
+        setCompleted((c) => Math.max(c, 2));
+        siaThen(SIA_AFTER_ANAGRAM, "read_along");
+      } else {
+        siaThen(SIA_WRONG_COST, "anagram"); // wrong → Anagram helps
+      }
+    }
+  }
+
+  /* mic press → REAL speech recognition (no auto-answer) */
   function handleMic() {
     if (listening) return;
+    if (!recognitionSupported()) {
+      // no STT here → nudge the learner to type instead
+      addMsg("sia", "Mic isn’t available here — type your answer below.");
+      return;
+    }
+    stopSpeaking();
     setListening(true);
-    setTimeout(() => {
-      setListening(false);
-      if (stage === "say_hello") {
-        addMsg("user", "Hello");
-        setTimeout(() => {
-          addMsg("sia", SIA_AFTER_HELLO);
-          setStage("guide_sentence");
-        }, 600);
-      } else if (stage === "guide_sentence") {
-        addMsg("user", "I looking for guide.");
-        setTimeout(() => {
-          addMsg("sia", SIA_WRONG_GUIDE);
-          setStage("mcq");
-        }, 600);
-      } else if (stage === "cost_sentence") {
-        addMsg("user", "What is the cost?");
-        setTimeout(() => setStage("anagram"), 600);
-      }
-    }, 1000);
+    recognizeOnce({
+      onResult: (t) => handleAnswer(t),
+      onError: () => setListening(false),
+      onEnd: () => setListening(false),
+    });
   }
 
   function handleMcqCorrect(text) {
@@ -142,6 +177,7 @@ export default function App() {
               messages={messages}
               listening={listening}
               onMic={handleMic}
+              onUserText={handleAnswer}
               onMcqCorrect={handleMcqCorrect}
               onAnagramDone={handleAnagramDone}
               onReadAlongDone={handleReadAlongDone}

@@ -24,6 +24,7 @@ export default function TajChatScreen({
   onAnagramDone,
   onReadAlongDone,
   onMeetGuide,
+  onUserText,
 }) {
   const scrollRef = useRef(null);
   useEffect(() => {
@@ -74,7 +75,7 @@ export default function TajChatScreen({
         {/* speaking input / read-along / final CTA stay pinned at the bottom */}
         <AnimatePresence mode="wait">
           {MIC_STAGES.includes(stage) && (
-            <BottomMicInput key="mic" listening={listening} onMic={onMic} />
+            <BottomMicInput key="mic" listening={listening} onMic={onMic} onSubmit={onUserText} />
           )}
           {stage === "read_along" && <ReadAlongCard key="read" onDone={onReadAlongDone} />}
           {stage === "final" && (

@@ -1,21 +1,34 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { MicIcon, SpeakerIcon, TrashIcon, Waveform, BRAND_ORANGE } from "./icons.jsx";
+import { speak, recognizeOnce, recognitionSupported } from "./speech.js";
 
 /**
- * ReadAlongCard — "Speak this sentence". idle → (mic) listening → success.
- * The sentence is configurable.
+ * ReadAlongCard — "Speak this sentence". The learner must actually speak (real
+ * recognition). Speaker button plays the sentence. Skip bypasses. The sentence
+ * is configurable.
  */
-export default function ReadAlongCard({ onDone, sentence = "Ok, I will hire you." }) {
+export default function ReadAlongCard({ onDone, sentence = "Ok, I will hire you.", voice = "female" }) {
   const SENTENCE = sentence;
   const WORDS = SENTENCE.split(" ");
   const [state, setState] = useState("idle"); // idle | listening
 
   function startListening() {
     if (state === "listening") return;
+    if (!recognitionSupported()) {
+      // no STT (e.g. http on phone) → accept the attempt after a beat
+      setState("listening");
+      setTimeout(() => onDone(SENTENCE), 1200);
+      return;
+    }
     setState("listening");
-    // no success card — drop straight into the chat once "spoken"
-    setTimeout(() => onDone(SENTENCE), 1200);
+    recognizeOnce({
+      onResult: () => onDone(SENTENCE), // repeat-after-me → accept the attempt
+      onError: () => setState("idle"),
+      onEnd: (got) => {
+        if (!got) setState("idle");
+      },
+    });
   }
 
   const listening = state === "listening";
@@ -48,6 +61,7 @@ export default function ReadAlongCard({ onDone, sentence = "Ok, I will hire you.
       <div className="flex items-center justify-center gap-6">
         <button
           type="button"
+          onClick={() => !listening && speak(SENTENCE, { gender: voice })}
           aria-label={listening ? "Delete" : "Listen"}
           className="grid h-11 w-11 place-items-center rounded-full bg-stone-100 text-stone-500 shadow-sm transition active:scale-95"
         >

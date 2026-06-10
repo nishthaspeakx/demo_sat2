@@ -5,6 +5,7 @@ import ChatBubble from "./ChatBubble.jsx";
 import MCQCard from "./MCQCard.jsx";
 import AnagramCard from "./AnagramCard.jsx";
 import ReadAlongCard from "./ReadAlongCard.jsx";
+import { speak } from "./speech.js";
 
 /**
  * GuideConversationScreen — fixed top half (guide-bg + guide character + white
@@ -21,8 +22,10 @@ export default function GuideConversationScreen({ onComplete }) {
 
   const idRef = useRef(0);
   const nextId = () => ++idRef.current;
-  const add = (side, text) =>
+  const add = (side, text) => {
     setMessages((m) => [...m, { id: nextId(), side, text }]);
+    if (side === "guide") speak(text, { gender: "male" });
+  };
 
   const scrollRef = useRef(null);
   useEffect(() => {
@@ -34,9 +37,10 @@ export default function GuideConversationScreen({ onComplete }) {
   useEffect(() => {
     const ts = [];
     setMessages([{ id: nextId(), side: "guide", text: "Hello" }]);
-    ts.push(setTimeout(() => add("user", "Hello"), 900));
-    ts.push(setTimeout(() => add("guide", "How may I help you?"), 1900));
-    ts.push(setTimeout(() => setStage("guide_anagram"), 2900));
+    speak("Hello", { gender: "male" });
+    ts.push(setTimeout(() => add("user", "Hello"), 1200));
+    ts.push(setTimeout(() => add("guide", "How may I help you?"), 2200));
+    ts.push(setTimeout(() => setStage("guide_anagram"), 3400));
     return () => ts.forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -120,7 +124,7 @@ export default function GuideConversationScreen({ onComplete }) {
 
         <AnimatePresence mode="wait">
           {stage === "guide_read_along" && (
-            <ReadAlongCard key="g-read" sentence="Great! I will hire you." onDone={handleReadAlong} />
+            <ReadAlongCard key="g-read" sentence="Great! I will hire you." voice="male" onDone={handleReadAlong} />
           )}
           {stage === "guide_complete" && (
             <motion.div
