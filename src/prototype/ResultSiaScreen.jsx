@@ -15,7 +15,7 @@ export default function ResultSiaScreen({ onGoToCafe }) {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="absolute inset-0 overflow-hidden bg-white"
     >
-      <img src="/assets/sia_2.png" alt="Taj Mahal"
+      <img src="/assets/taj.jpg" alt="Taj Mahal"
         className="absolute inset-0 h-full w-full object-cover object-center" draggable={false} />
       <img src="/assets/sia.png" alt="Sia"
         className="absolute left-1/2 top-[8%] z-10 h-[46%] w-auto -translate-x-1/2 object-contain"
