@@ -16,7 +16,7 @@ export default function ResultSiaScreen({ onGoToCafe }) {
       className="absolute inset-0 overflow-hidden bg-white"
     >
       <img src="/assets/sia_3.png" alt="Taj Mahal"
-        className="absolute inset-0 h-full w-full object-cover object-center" draggable={false} />
+        className="absolute inset-x-0 top-0 w-full h-auto" draggable={false} />
       <img src="/assets/sia.png" alt="Sia"
         className="absolute left-1/2 top-[8%] z-10 h-[46%] w-auto -translate-x-1/2 object-contain"
         draggable={false} />
