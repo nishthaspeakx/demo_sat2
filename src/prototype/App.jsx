@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { speak, stopSpeaking, recognizeOnce, recognitionSupported, matches } from "./speech.js";
+import { clipKeyForText } from "./lipsync.js";
+
+const estMs = (t) => Math.min(6000, Math.max(1500, String(t || "").length * 55));
 import MapScreen from "./MapScreen.jsx";
 import TajChatScreen from "./TajChatScreen.jsx";
 import MeetGuideTransition from "./MeetGuideTransition.jsx";
@@ -43,15 +46,37 @@ export default function App() {
   );
   const [listening, setListening] = useState(false);
   const [typing, setTyping] = useState(false);
+  const [siaClip, setSiaClip] = useState(null); // { key, onEnd } while a lip-sync clip plays
 
   const idRef = useRef(0);
   const nextId = () => ++idRef.current;
-  // adding a Sia line also speaks it aloud (TTS)
+  const clipRef = useRef(null);
+  useEffect(() => { clipRef.current = siaClip; }, [siaClip]);
+
+  // Sia line: if a pre-generated lip-sync clip exists, play it (its own audio);
+  // otherwise fall back to browser TTS. opts.onClipEnd fires when she finishes the line.
   const addMsg = (side, text, opts = {}) => {
     setMessages((m) => [...m, { id: nextId(), side, text }]);
-    if (side === "sia") speak(text, { gender: "female", onend: opts.onend, queue: opts.queue });
-    else if (opts.onend) opts.onend();
+    if (side !== "sia") {
+      if (opts.onend) opts.onend();
+      return;
+    }
+    const key = clipKeyForText(text);
+    if (key) {
+      stopSpeaking();
+      setSiaClip({ key, onEnd: opts.onClipEnd });
+    } else {
+      speak(text, { gender: "female", onend: opts.onend, queue: opts.queue });
+      if (opts.onClipEnd) setTimeout(opts.onClipEnd, estMs(text));
+    }
   };
+
+  // called when a lip-sync video finishes (from TajChatScreen / ResultSiaScreen)
+  function handleSiaClipEnd() {
+    const cb = clipRef.current?.onEnd;
+    setSiaClip(null);
+    if (cb) cb();
+  }
   // current stage in a ref so async recognition callbacks read the latest value
   const stageRef = useRef(stage);
   useEffect(() => {
@@ -62,15 +87,13 @@ export default function App() {
   useEffect(() => {
     if (screen !== "chat") return;
     if (stage !== "intro") return; // skip when jumped via DEV_STAGE
-    // chat-paced bubbles; speech queues so both lines are still spoken in order
-    setMessages([{ id: nextId(), side: "sia", text: INTRO_1 }]);
-    speak(INTRO_1, { gender: "female" });
-    const t1 = setTimeout(() => addMsg("sia", INTRO_2, { queue: true }), 1100);
-    const t2 = setTimeout(() => setStage("say_hello"), 1800);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
+    // play intro line 1, then line 2, then open the speaking stage — chained to
+    // each clip ending so the spoken audio isn't cut off
+    setMessages([]);
+    addMsg("sia", INTRO_1, {
+      onClipEnd: () =>
+        addMsg("sia", INTRO_2, { onClipEnd: () => setStage("say_hello") }),
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
 
@@ -198,6 +221,8 @@ export default function App() {
               messages={messages}
               listening={listening}
               typing={typing}
+              siaClip={siaClip}
+              onSiaClipEnd={handleSiaClipEnd}
               onMic={handleMic}
               onUserText={handleAnswer}
               onMcqCorrect={handleMcqCorrect}

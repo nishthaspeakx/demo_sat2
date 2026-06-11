@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import ChatBubble from "./ChatBubble.jsx";
 
 /**
- * ResultSiaScreen — Taj + Sia style screen shown after the guide conversation.
- * Sia centered, white fade, one Sia message, and a "Go to Cafe" CTA.
+ * ResultSiaScreen — Sia stage with the result lip-sync clip, one message, CTA.
  */
 export default function ResultSiaScreen({ onGoToCafe }) {
+  const [playing, setPlaying] = useState(true);
   return (
     <motion.div
       key="result"
@@ -15,11 +15,18 @@ export default function ResultSiaScreen({ onGoToCafe }) {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="absolute inset-0 overflow-hidden bg-white"
     >
-      <img src="/assets/sia_3.png" alt="Taj Mahal"
-        className="absolute inset-x-0 top-0 w-full h-auto" draggable={false} />
-      <img src="/assets/sia.png" alt="Sia"
-        className="absolute left-1/2 top-[8%] z-10 h-[46%] w-auto -translate-x-1/2 object-contain"
-        draggable={false} />
+      <img src="/assets/sia-stage.png" alt="Sia at the Taj Mahal"
+        className="absolute inset-x-0 top-0 z-0 w-full h-auto" draggable={false} />
+      {playing && (
+        <video
+          src="/assets/lipsync/result.mp4"
+          autoPlay
+          playsInline
+          onEnded={() => setPlaying(false)}
+          onError={() => setPlaying(false)}
+          className="absolute inset-x-0 top-0 z-10 w-full h-auto"
+        />
+      )}
       <div className="absolute inset-0 z-20" style={{
         background:
           "linear-gradient(to bottom, rgba(255,255,255,0) 30%, rgba(255,255,255,0.6) 44%, rgba(255,255,255,0.95) 52%, #ffffff 58%)",

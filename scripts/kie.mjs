@@ -19,6 +19,8 @@ export async function getTask(taskId) {
 }
 
 // CLI: node scripts/kie.mjs create '<model>' '<inputJSON>'  |  node scripts/kie.mjs get '<taskId>'
-const [cmd, a, b] = process.argv.slice(2);
-if (cmd === "create") console.log((await createTask(a, JSON.parse(b))).body);
-else if (cmd === "get") console.log((await getTask(a)).body);
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const [cmd, a, b] = process.argv.slice(2);
+  if (cmd === "create") console.log((await createTask(a, JSON.parse(b))).body);
+  else if (cmd === "get") console.log((await getTask(a)).body);
+}

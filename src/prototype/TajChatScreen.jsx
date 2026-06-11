@@ -47,6 +47,8 @@ export default function TajChatScreen({
   onReadAlongDone,
   onMeetGuide,
   onUserText,
+  siaClip,
+  onSiaClipEnd,
 }) {
   const [hintOpen, setHintOpen] = useState(false);
   const hint = HINTS[stage];
@@ -72,12 +74,20 @@ export default function TajChatScreen({
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className="absolute inset-0 overflow-hidden bg-white"
     >
-      {/* ===== UPPER HALF — never changes ===== */}
-      <img src="/assets/sia_3.png" alt="Taj Mahal"
-        className="absolute inset-x-0 top-0 w-full h-auto" draggable={false} />
-      <img src="/assets/sia.png" alt="Sia"
-        className="absolute left-[-3%] top-[16%] z-10 h-[40%] w-auto object-contain"
-        draggable={false} />
+      {/* ===== UPPER HALF — Sia stage; talking video while a clip plays ===== */}
+      <img src="/assets/sia-stage.png" alt="Sia at the Taj Mahal"
+        className="absolute inset-x-0 top-0 z-0 w-full h-auto" draggable={false} />
+      {siaClip && (
+        <video
+          key={siaClip.key}
+          src={`/assets/lipsync/${siaClip.key}.mp4`}
+          autoPlay
+          playsInline
+          onEnded={onSiaClipEnd}
+          onError={onSiaClipEnd}
+          className="absolute inset-x-0 top-0 z-10 w-full h-auto"
+        />
+      )}
       <div className="absolute inset-0 z-20" style={{
         background:
           "linear-gradient(to bottom, rgba(255,255,255,0) 30%, rgba(255,255,255,0.55) 42%, rgba(255,255,255,0.95) 48%, #ffffff 52%)",
