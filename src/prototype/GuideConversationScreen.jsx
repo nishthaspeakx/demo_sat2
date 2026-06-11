@@ -125,7 +125,7 @@ export default function GuideConversationScreen({ onComplete }) {
       <img
         src="/assets/guide-character.svg"
         alt="Guide"
-        className="absolute left-[3%] top-[3%] z-10 h-[36%] w-auto object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)]"
+        className="absolute left-[-5%] top-[3%] z-10 h-[36%] w-auto object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)]"
         draggable={false}
       />
 
