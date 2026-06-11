@@ -96,12 +96,10 @@ export default function TajChatScreen({
           {stage === "mcq" && <MCQCard key="mcq" onCorrect={onMcqCorrect} />}
           {stage === "anagram" && <AnagramCard key="anagram" onDone={onAnagramDone} />}
           {typing && <TypingDots key="typing" />}
-        </div>
 
-        {/* show-hint: small floating pill (lower-right) → suggestion card */}
-        {MIC_STAGES.includes(stage) && hint && (
-          <div className={`px-4 pb-1 ${hintOpen ? "" : "flex justify-end"}`}>
-            {hintOpen ? (
+          {/* show-hint sits in the chat flow, right under the bubbles */}
+          {MIC_STAGES.includes(stage) && hint && (
+            hintOpen ? (
               <Suggestion
                 english={hint.en}
                 translation={hint.hi}
@@ -109,16 +107,18 @@ export default function TajChatScreen({
                 onUse={() => setHintOpen(false)}
               />
             ) : (
-              <button
-                type="button"
-                onClick={() => setHintOpen(true)}
-                className="inline-flex items-center gap-2 rounded-xl border border-dashed border-stone-300 bg-white/80 px-4 py-2.5 text-[14px] font-medium text-stone-500 shadow-sm transition active:scale-[0.98]"
-              >
-                <span className="text-lg leading-none">💡</span> Show hint
-              </button>
-            )}
-          </div>
-        )}
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setHintOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-xl border border-dashed border-stone-300 bg-white/80 px-4 py-2.5 text-[14px] font-medium text-stone-500 shadow-sm transition active:scale-[0.98]"
+                >
+                  <span className="text-lg leading-none">💡</span> Show hint
+                </button>
+              </div>
+            )
+          )}
+        </div>
 
         {/* speaking input / read-along / final CTA stay pinned at the bottom */}
         <AnimatePresence mode="wait">
