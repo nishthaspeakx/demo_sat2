@@ -6,7 +6,9 @@ import MCQCard from "./MCQCard.jsx";
 import AnagramCard from "./AnagramCard.jsx";
 import ReadAlongCard from "./ReadAlongCard.jsx";
 import BottomMicInput from "./BottomMicInput.jsx";
+import AnimatedCharacter from "./AnimatedCharacter.jsx";
 import { speak, stopSpeaking, recognizeOnce, recognitionSupported, matches } from "./speech.js";
+import { getSpeechDuration, getEmotionForMessage } from "./characterUtils.js";
 
 /**
  * GuideConversationScreen — fixed top half (guide-bg + guide character + white
@@ -21,13 +23,29 @@ export default function GuideConversationScreen({ onComplete }) {
   const [completed, setCompleted] = useState(0); // guideTasksCompleted
   const [messages, setMessages] = useState([]);
   const [listening, setListening] = useState(false);
+  const [charState, setCharState] = useState("idle");
+  const [charEmotion, setCharEmotion] = useState("happy");
 
   const idRef = useRef(0);
   const nextId = () => ++idRef.current;
+  const speakTimer = useRef(null);
+
+  const markSpeaking = (text) => {
+    setCharEmotion(getEmotionForMessage(text));
+    setCharState("speaking");
+    clearTimeout(speakTimer.current);
+    speakTimer.current = setTimeout(
+      () => setCharState((s) => (s === "speaking" ? "idle" : s)),
+      getSpeechDuration(text)
+    );
+  };
+
   const add = (side, text, opts = {}) => {
     setMessages((m) => [...m, { id: nextId(), side, text }]);
-    if (side === "guide") speak(text, { gender: "male", onend: opts.onend });
-    else if (opts.onend) opts.onend();
+    if (side === "guide") {
+      markSpeaking(text);
+      speak(text, { gender: "male", onend: opts.onend });
+    } else if (opts.onend) opts.onend();
   };
 
   const stageRef = useRef(stage);
@@ -55,6 +73,7 @@ export default function GuideConversationScreen({ onComplete }) {
 
   /* user greets the guide */
   function handleHello(text) {
+    setCharState("thinking");
     add("user", text);
     if (matches(text, "hello") || matches(text, "hi")) {
       add("guide", "How may I help you?", {
@@ -73,9 +92,12 @@ export default function GuideConversationScreen({ onComplete }) {
     }
     stopSpeaking();
     setListening(true);
+    setCharState("listening");
     const startedAt = Date.now();
-    const stop = () =>
+    const stop = () => {
+      setCharState((s) => (s === "listening" ? "idle" : s));
       setTimeout(() => setListening(false), Math.max(0, 600 - (Date.now() - startedAt)));
+    };
     recognizeOnce({
       onResult: (t) => handleHello(t),
       onError: (e) => {
@@ -90,6 +112,7 @@ export default function GuideConversationScreen({ onComplete }) {
 
   function handleAnagram(text) {
     add("user", text);
+    setCharState("success");
     setCompleted((c) => Math.max(c, 1));
     setTimeout(() => add("guide", "Sure, I am available."), 600);
     setTimeout(() => add("guide", "What would you like to ask next?"), 1500);
@@ -98,6 +121,7 @@ export default function GuideConversationScreen({ onComplete }) {
 
   function handleMcq(text) {
     add("user", text);
+    setCharState("success");
     setCompleted((c) => Math.max(c, 2));
     setTimeout(() => add("guide", "It’s 500 Rs per hour."), 600);
     setTimeout(() => setStage("guide_read_along"), 1500);
@@ -105,6 +129,7 @@ export default function GuideConversationScreen({ onComplete }) {
 
   function handleReadAlong(text) {
     add("user", text); // sentence drops in as a normal chat bubble
+    setCharState("success");
     setCompleted((c) => Math.max(c, 3)); // tick task 3 (animates in tracker)
     setTimeout(() => add("guide", "Awesome! Let’s visit Taj Mahal."), 400);
     setTimeout(() => setStage("guide_complete"), 1300);
@@ -122,11 +147,13 @@ export default function GuideConversationScreen({ onComplete }) {
       <img src="/assets/guide_2.png" alt="Taj Mahal"
         className="absolute inset-0 h-full w-full object-cover object-center" draggable={false} />
 
-      <img
+      <AnimatedCharacter
+        type="guide"
         src="/assets/guide-character.svg"
-        alt="Guide"
-        className="guide-enter absolute left-1/2 top-[3%] z-10 h-[36%] w-auto object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)]"
-        draggable={false}
+        state={charState}
+        emotion={charEmotion}
+        className="guide-enter absolute left-1/2 top-[3%] z-10 h-[36%] -translate-x-1/2"
+        imgClassName="h-full w-auto object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)]"
       />
 
       <div className="absolute inset-0 z-20" style={{
