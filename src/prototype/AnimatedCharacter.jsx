@@ -22,7 +22,7 @@ import { useRandomBlink } from "./useRandomBlink.js";
 
 const avatarConfig = {
   sia: {
-    mouth: { top: "43%", left: "50%", width: 20, maxH: 7, color: "#7c3f39" },
+    mouth: { top: "47.5%", left: "50%", width: 20, maxH: 7, color: "#7c3f39" },
     eyes: [
       { top: "30%", left: "45%", w: 15, h: 10 },
       { top: "30%", left: "55%", w: 15, h: 10 },
