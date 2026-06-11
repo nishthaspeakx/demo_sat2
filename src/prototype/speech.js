@@ -55,14 +55,14 @@ function estMs(text) {
  * `onend` fires when speech finishes (or after a fallback if TTS is missing) —
  * use it to keep the conversation in sync with the voice.
  */
-export function speak(text, { gender = "female", rate = 1, onend } = {}) {
+export function speak(text, { gender = "female", rate = 1, onend, queue = false } = {}) {
   const synth = typeof window !== "undefined" ? window.speechSynthesis : null;
   if (!synth || !text) {
     if (onend) setTimeout(onend, estMs(text));
     return;
   }
   try {
-    synth.cancel();
+    if (!queue) synth.cancel(); // queue:true lets lines play back-to-back
     const u = new SpeechSynthesisUtterance(
       String(text).replace(/[“”]/g, '"').replace(/[‘’]/g, "'")
     );
