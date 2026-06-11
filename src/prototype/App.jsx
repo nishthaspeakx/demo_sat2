@@ -114,10 +114,20 @@ export default function App() {
     }
     stopSpeaking();
     setListening(true);
+    const startedAt = Date.now();
+    // keep the "Listening…" cue visible for at least 600ms even if STT errors fast
+    const stop = () =>
+      setTimeout(() => setListening(false), Math.max(0, 600 - (Date.now() - startedAt)));
     recognizeOnce({
       onResult: (t) => handleAnswer(t),
-      onError: () => setListening(false),
-      onEnd: () => setListening(false),
+      onError: (e) => {
+        if (e === "not-allowed" || e === "service-not-allowed")
+          addMsg("sia", "Please allow microphone access — ya niche type karein.");
+        else if (e === "no-speech")
+          addMsg("sia", "Mujhe sunai nahi diya — phir se boliye.");
+        stop();
+      },
+      onEnd: stop,
     });
   }
 

@@ -73,10 +73,18 @@ export default function GuideConversationScreen({ onComplete }) {
     }
     stopSpeaking();
     setListening(true);
+    const startedAt = Date.now();
+    const stop = () =>
+      setTimeout(() => setListening(false), Math.max(0, 600 - (Date.now() - startedAt)));
     recognizeOnce({
       onResult: (t) => handleHello(t),
-      onError: () => setListening(false),
-      onEnd: () => setListening(false),
+      onError: (e) => {
+        if (e === "not-allowed" || e === "service-not-allowed")
+          add("guide", "Please allow microphone access — ya niche type karein.");
+        else if (e === "no-speech") add("guide", "Sorry, didn’t catch that — try again.");
+        stop();
+      },
+      onEnd: stop,
     });
   }
 

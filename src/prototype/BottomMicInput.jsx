@@ -35,22 +35,26 @@ export default function BottomMicInput({ listening, onMic, onSubmit }) {
       transition={{ duration: 0.3 }}
       className="border-t border-black/5 bg-white/95 px-4 pb-5 pt-3 backdrop-blur"
     >
-      {listening && (
-        <div className="mb-2 flex items-center justify-center gap-2 text-[12px] font-semibold text-orange-500">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-orange-500" />
-          Listening…
-        </div>
-      )}
       <div className="flex items-center gap-3">
-        <input
-          type="text"
-          value={val}
-          onChange={(e) => setVal(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && submit()}
-          placeholder="Speak or type your answer…"
-          className="h-[52px] min-w-0 flex-1 rounded-full bg-[#F3F3F3] px-5 text-[15px] text-stone-800 placeholder:text-stone-400 outline-none"
-        />
-        {hasText ? (
+        {listening ? (
+          <div className="flex h-[52px] flex-1 items-center gap-3 rounded-full bg-orange-50 px-5 ring-1 ring-orange-200">
+            <span className="relative flex h-3 w-3">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400/70" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-orange-500" />
+            </span>
+            <span className="text-[14px] font-semibold text-orange-600">Listening… speak now</span>
+          </div>
+        ) : (
+          <input
+            type="text"
+            value={val}
+            onChange={(e) => setVal(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && submit()}
+            placeholder="Speak or type your answer…"
+            className="h-[52px] min-w-0 flex-1 rounded-full bg-[#F3F3F3] px-5 text-[15px] text-stone-800 placeholder:text-stone-400 outline-none"
+          />
+        )}
+        {hasText && !listening ? (
           <button
             type="button"
             onClick={submit}
