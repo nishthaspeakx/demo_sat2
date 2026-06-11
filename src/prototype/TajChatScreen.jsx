@@ -76,13 +76,13 @@ export default function TajChatScreen({
       <img src="/assets/sia_3.png" alt="Taj Mahal"
         className="absolute inset-x-0 top-0 w-full h-auto" draggable={false} />
       <img src="/assets/sia.png" alt="Sia"
-        className="absolute left-[-4%] top-[8%] z-10 h-[42%] w-auto object-contain"
+        className="absolute left-[-3%] top-[16%] z-10 h-[40%] w-auto object-contain"
         draggable={false} />
       <div className="absolute inset-0 z-20" style={{
         background:
           "linear-gradient(to bottom, rgba(255,255,255,0) 30%, rgba(255,255,255,0.55) 42%, rgba(255,255,255,0.95) 48%, #ffffff 52%)",
       }} />
-      <div className={`absolute inset-x-0 top-0 z-40 pt-3 transition-opacity duration-300 ${leaving ? "opacity-0" : "opacity-100"}`}>
+      <div className={`absolute inset-x-0 top-[5%] z-40 transition-opacity duration-300 ${leaving ? "opacity-0" : "opacity-100"}`}>
         <ProgressTracker completed={completed} total={3} />
       </div>
 
