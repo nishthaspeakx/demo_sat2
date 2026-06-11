@@ -119,13 +119,13 @@ export default function GuideConversationScreen({ onComplete }) {
       className="absolute inset-0 overflow-hidden bg-white"
     >
       {/* ===== TOP HALF — fixed ===== */}
-      <img src="/assets/guide_2.png" alt="Taj Mahal"
+      <img src="/assets/guide_4.png" alt="Taj Mahal"
         className="absolute inset-0 h-full w-full object-cover object-center" draggable={false} />
 
       <img
         src="/assets/guide-character.svg"
         alt="Guide"
-        className="guide-enter absolute left-1/2 top-[3%] z-10 h-[36%] w-auto object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)]"
+        className="absolute left-[3%] top-[3%] z-10 h-[36%] w-auto object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)]"
         draggable={false}
       />
 
