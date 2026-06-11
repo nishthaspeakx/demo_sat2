@@ -51,7 +51,7 @@ export default function TajChatScreen({
       <img src="/assets/taj.jpg" alt="Taj Mahal"
         className="absolute inset-0 h-full w-full object-cover object-center" draggable={false} />
       <img src="/assets/sia.png" alt="Sia"
-        className="absolute left-1/2 top-[4%] z-10 h-[34%] w-auto -translate-x-1/2 object-contain"
+        className="absolute left-[3%] top-[4%] z-10 h-[34%] w-auto object-contain"
         draggable={false} />
       <div className="absolute inset-0 z-20" style={{
         background:
