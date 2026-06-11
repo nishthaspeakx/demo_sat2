@@ -13,4 +13,8 @@ export default defineConfig({
     allowedHosts: true,    // accept tunnel hostnames too
     ...(useHttps ? { https: true } : {}),
   },
+  preview: {
+    host: true,
+    allowedHosts: true,    // accept *.trycloudflare.com for the demo tunnel
+  },
 })
