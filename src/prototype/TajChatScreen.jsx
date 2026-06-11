@@ -76,7 +76,7 @@ export default function TajChatScreen({
       <img src="/assets/sia_3.png" alt="Taj Mahal"
         className="absolute inset-x-0 top-0 w-full h-auto" draggable={false} />
       <img src="/assets/sia.png" alt="Sia"
-        className="absolute left-1/2 top-[7%] z-10 h-[42%] w-auto -translate-x-1/2 object-contain"
+        className="absolute left-[-4%] top-[8%] z-10 h-[42%] w-auto object-contain"
         draggable={false} />
       <div className="absolute inset-0 z-20" style={{
         background:
@@ -98,9 +98,9 @@ export default function TajChatScreen({
           {typing && <TypingDots key="typing" />}
         </div>
 
-        {/* show-hint card during speaking stages */}
+        {/* show-hint: small floating pill (lower-right) → suggestion card */}
         {MIC_STAGES.includes(stage) && hint && (
-          <div className="px-4 pb-1">
+          <div className={`px-4 pb-1 ${hintOpen ? "" : "flex justify-end"}`}>
             {hintOpen ? (
               <Suggestion
                 english={hint.en}
@@ -112,9 +112,9 @@ export default function TajChatScreen({
               <button
                 type="button"
                 onClick={() => setHintOpen(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-stone-300 bg-white/70 py-2.5 text-[13px] font-medium text-stone-500 transition active:scale-[0.99]"
+                className="inline-flex items-center gap-2 rounded-xl border border-dashed border-stone-300 bg-white/80 px-4 py-2.5 text-[14px] font-medium text-stone-500 shadow-sm transition active:scale-[0.98]"
               >
-                <span className="text-base">💡</span> Show hint
+                <span className="text-lg leading-none">💡</span> Show hint
               </button>
             )}
           </div>

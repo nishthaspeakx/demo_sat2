@@ -33,35 +33,27 @@ export default function MCQCard({
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 20, opacity: 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="w-full self-start rounded-2xl bg-white p-4 shadow-md ring-1 ring-black/5"
+      className="w-full self-start rounded-2xl bg-[#FFF7EC] p-4 shadow-md ring-1 ring-amber-100"
     >
-      <h3 className="mb-3 text-[15px] font-semibold text-stone-800">{heading}</h3>
-      <div className="space-y-2.5">
+      <h3 className="mb-3.5 text-[16px] font-bold text-orange-500">{heading}</h3>
+      <div className="space-y-3">
         {OPTIONS.map((o, i) => {
           const chosen = sel === i;
           const correct = i === CORRECT;
-          let cls = "border-stone-200 bg-white text-stone-700";
-          if (chosen && correct) cls = "border-emerald-400 bg-emerald-50 text-emerald-800";
-          else if (chosen && !correct) cls = "border-red-300 bg-red-50 text-red-700";
+          let cls = "border-transparent bg-white text-stone-700 ring-1 ring-black/5";
+          if (chosen && correct)
+            cls = "border-emerald-400 bg-emerald-50 text-emerald-800 ring-0";
+          else if (chosen && !correct)
+            cls = "border-red-300 bg-red-50 text-red-700 ring-0";
+          else if (chosen)
+            cls = "border-orange-400 bg-orange-50 text-stone-800 shadow-[0_0_0_3px_rgba(242,121,43,0.15)] ring-0";
           return (
             <button
               key={i}
               type="button"
               onClick={() => pick(i)}
-              className={`flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left text-[14px] transition active:scale-[0.99] ${cls}`}
+              className={`w-full rounded-2xl border-2 px-4 py-3.5 text-left text-[15px] font-medium transition active:scale-[0.99] ${cls}`}
             >
-              <span
-                className={[
-                  "grid h-5 w-5 shrink-0 place-items-center rounded-full border-2",
-                  chosen && correct ? "border-emerald-500 bg-emerald-500" : "",
-                  chosen && !correct ? "border-red-400" : "",
-                  !chosen ? "border-stone-300" : "",
-                ].join(" ")}
-              >
-                {chosen && correct && (
-                  <span className="h-2 w-2 rounded-full bg-white" />
-                )}
-              </span>
               {o}
             </button>
           );
