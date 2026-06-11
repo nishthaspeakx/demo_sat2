@@ -42,6 +42,7 @@ export default function App() {
     DEV_STAGE === "final" ? [{ id: -1, side: "sia", text: SIA_FINAL }] : []
   );
   const [listening, setListening] = useState(false);
+  const [typing, setTyping] = useState(false);
 
   const idRef = useRef(0);
   const nextId = () => ++idRef.current;
@@ -73,8 +74,10 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
 
-  function siaThen(text, nextStage, delay = 450) {
+  function siaThen(text, nextStage, delay = 700) {
+    setTyping(true);
     setTimeout(() => {
+      setTyping(false);
       addMsg("sia", text);
       setStage(nextStage);
     }, delay);
@@ -134,28 +137,34 @@ export default function App() {
   function handleMcqCorrect(text) {
     addMsg("user", text);
     setCompleted((c) => Math.max(c, 1));
+    setTyping(true);
     setTimeout(() => {
+      setTyping(false);
       addMsg("sia", SIA_AFTER_MCQ);
       setStage("cost_sentence");
-    }, 600);
+    }, 700);
   }
 
   function handleAnagramDone(text) {
     addMsg("user", text);
     setCompleted((c) => Math.max(c, 2));
+    setTyping(true);
     setTimeout(() => {
+      setTyping(false);
       addMsg("sia", SIA_AFTER_ANAGRAM);
       setStage("read_along");
-    }, 600);
+    }, 700);
   }
 
   function handleReadAlongDone(text) {
     addMsg("user", text);
     setCompleted((c) => Math.max(c, 3));
+    setTyping(true);
     setTimeout(() => {
+      setTyping(false);
       addMsg("sia", SIA_FINAL);
       setStage("final");
-    }, 400);
+    }, 600);
   }
 
   function handleMeetGuide() {
@@ -188,6 +197,7 @@ export default function App() {
               completed={completed}
               messages={messages}
               listening={listening}
+              typing={typing}
               onMic={handleMic}
               onUserText={handleAnswer}
               onMcqCorrect={handleMcqCorrect}

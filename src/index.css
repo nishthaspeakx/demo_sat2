@@ -39,6 +39,12 @@ body {
   .wave-bar { animation: none; transform: scaleY(0.6); }
 }
 
+/* Typing indicator dots */
+@keyframes typingDot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-3px); opacity: 1; }
+}
+
 /* Guide character gentle fade + rise (keeps horizontal centering) */
 @keyframes guideEnter {
   0%   { opacity: 0; transform: translate(-50%, 24px); }
