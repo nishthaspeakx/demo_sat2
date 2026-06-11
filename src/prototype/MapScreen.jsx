@@ -18,7 +18,7 @@ export default function MapScreen({ onStart }) {
       <img
         src="/assets/map.png"
         alt="Visit Taj Mahal map"
-        className="h-full w-full object-cover object-top"
+        className="h-full w-full object-cover object-bottom"
         draggable={false}
       />
 
