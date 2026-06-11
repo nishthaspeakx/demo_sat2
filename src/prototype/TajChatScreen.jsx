@@ -6,7 +6,6 @@ import BottomMicInput from "./BottomMicInput.jsx";
 import MCQCard from "./MCQCard.jsx";
 import AnagramCard from "./AnagramCard.jsx";
 import ReadAlongCard from "./ReadAlongCard.jsx";
-import AnimatedCharacter from "./AnimatedCharacter.jsx";
 
 /**
  * TajChatScreen — fixed upper half (Taj gate + Sia + white fade + progress) and
@@ -26,8 +25,6 @@ export default function TajChatScreen({
   onReadAlongDone,
   onMeetGuide,
   onUserText,
-  siaState = "idle",
-  siaEmotion = "neutral",
 }) {
   const scrollRef = useRef(null);
   useEffect(() => {
@@ -53,13 +50,9 @@ export default function TajChatScreen({
       {/* ===== UPPER HALF — never changes ===== */}
       <img src="/assets/sia_2.png" alt="Taj Mahal"
         className="absolute inset-0 h-full w-full object-cover object-center" draggable={false} />
-      <AnimatedCharacter
-        type="sia"
-        src="/assets/sia.png"
-        state={siaState}
-        emotion={siaEmotion}
-        className="absolute left-1/2 top-[4%] z-10 h-[34%] -translate-x-1/2"
-      />
+      <img src="/assets/sia.png" alt="Sia"
+        className="absolute left-1/2 top-[4%] z-10 h-[34%] w-auto -translate-x-1/2 object-contain"
+        draggable={false} />
       <div className="absolute inset-0 z-20" style={{
         background:
           "linear-gradient(to bottom, rgba(255,255,255,0) 20%, rgba(255,255,255,0.6) 32%, rgba(255,255,255,0.95) 38%, #ffffff 44%)",

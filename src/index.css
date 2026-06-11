@@ -39,31 +39,6 @@ body {
   .wave-bar { animation: none; transform: scaleY(0.6); }
 }
 
-/* Fake lip-sync mouth overlay (only while a character is speaking) */
-@keyframes lipSync {
-  0%   { transform: translateX(-50%) scaleY(0.30); }
-  25%  { transform: translateX(-50%) scaleY(1.15); }
-  50%  { transform: translateX(-50%) scaleY(0.45); }
-  75%  { transform: translateX(-50%) scaleY(0.95); }
-  100% { transform: translateX(-50%) scaleY(0.35); }
-}
-.character-mouth {
-  position: absolute;
-  border-radius: 999px;
-  transform: translateX(-50%) scaleY(0.3);
-  transform-origin: center;
-  opacity: 0;
-  transition: opacity 140ms ease;
-  pointer-events: none;
-}
-.character-mouth.speaking {
-  opacity: 0.9;
-  animation: lipSync 0.24s infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .character-mouth.speaking { animation: none; transform: translateX(-50%) scaleY(0.7); }
-}
-
 /* Guide character gentle fade + rise (keeps horizontal centering) */
 @keyframes guideEnter {
   0%   { opacity: 0; transform: translate(-50%, 24px); }

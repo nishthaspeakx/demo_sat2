@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { speak, stopSpeaking, recognizeOnce, recognitionSupported, matches } from "./speech.js";
-import { getSpeechDuration, getEmotionForMessage } from "./characterUtils.js";
 import MapScreen from "./MapScreen.jsx";
 import TajChatScreen from "./TajChatScreen.jsx";
 import MeetGuideTransition from "./MeetGuideTransition.jsx";
@@ -43,31 +42,14 @@ export default function App() {
     DEV_STAGE === "final" ? [{ id: -1, side: "sia", text: SIA_FINAL }] : []
   );
   const [listening, setListening] = useState(false);
-  const [siaState, setSiaState] = useState("idle");
-  const [siaEmotion, setSiaEmotion] = useState("happy");
 
   const idRef = useRef(0);
   const nextId = () => ++idRef.current;
-  const speakTimer = useRef(null);
-
-  // drive Sia's "speaking" animation for the duration of a line
-  const markSiaSpeaking = (text) => {
-    setSiaEmotion(getEmotionForMessage(text));
-    setSiaState("speaking");
-    clearTimeout(speakTimer.current);
-    speakTimer.current = setTimeout(
-      () => setSiaState((s) => (s === "speaking" ? "idle" : s)),
-      getSpeechDuration(text)
-    );
-  };
-
-  // adding a Sia line also speaks it aloud (TTS) + animates the avatar
+  // adding a Sia line also speaks it aloud (TTS)
   const addMsg = (side, text, opts = {}) => {
     setMessages((m) => [...m, { id: nextId(), side, text }]);
-    if (side === "sia") {
-      markSiaSpeaking(text);
-      speak(text, { gender: "female", onend: opts.onend, queue: opts.queue });
-    } else if (opts.onend) opts.onend();
+    if (side === "sia") speak(text, { gender: "female", onend: opts.onend, queue: opts.queue });
+    else if (opts.onend) opts.onend();
   };
   // current stage in a ref so async recognition callbacks read the latest value
   const stageRef = useRef(stage);
@@ -101,7 +83,6 @@ export default function App() {
   /* evaluate a real spoken/typed answer for the current speaking stage */
   function handleAnswer(text) {
     const s = stageRef.current;
-    setSiaState("thinking"); // brief beat before Sia replies
     addMsg("user", text);
     if (s === "say_hello") {
       if (matches(text, "hello")) siaThen(SIA_AFTER_HELLO, "guide_sentence");
@@ -133,13 +114,10 @@ export default function App() {
     }
     stopSpeaking();
     setListening(true);
-    setSiaState("listening"); // Sia nods attentively
     const startedAt = Date.now();
     // keep the "Listening…" cue visible for at least 600ms even if STT errors fast
-    const stop = () => {
-      setSiaState((s) => (s === "listening" ? "idle" : s));
+    const stop = () =>
       setTimeout(() => setListening(false), Math.max(0, 600 - (Date.now() - startedAt)));
-    };
     recognizeOnce({
       onResult: (t) => handleAnswer(t),
       onError: (e) => {
@@ -155,7 +133,6 @@ export default function App() {
 
   function handleMcqCorrect(text) {
     addMsg("user", text);
-    setSiaState("success");
     setCompleted((c) => Math.max(c, 1));
     setTimeout(() => {
       addMsg("sia", SIA_AFTER_MCQ);
@@ -165,7 +142,6 @@ export default function App() {
 
   function handleAnagramDone(text) {
     addMsg("user", text);
-    setSiaState("success");
     setCompleted((c) => Math.max(c, 2));
     setTimeout(() => {
       addMsg("sia", SIA_AFTER_ANAGRAM);
@@ -175,7 +151,6 @@ export default function App() {
 
   function handleReadAlongDone(text) {
     addMsg("user", text);
-    setSiaState("success");
     setCompleted((c) => Math.max(c, 3));
     setTimeout(() => {
       addMsg("sia", SIA_FINAL);
@@ -213,8 +188,6 @@ export default function App() {
               completed={completed}
               messages={messages}
               listening={listening}
-              siaState={siaState}
-              siaEmotion={siaEmotion}
               onMic={handleMic}
               onUserText={handleAnswer}
               onMcqCorrect={handleMcqCorrect}
